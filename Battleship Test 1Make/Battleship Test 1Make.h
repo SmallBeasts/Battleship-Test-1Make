@@ -4,5 +4,7 @@
 #pragma once
 
 #include <iostream>
+#include "Helper.h"
 
 // TODO: Reference additional headers your program requires here.
+void query_array(bbboard* myboard, char* opbuf, int array_choice = 1);
