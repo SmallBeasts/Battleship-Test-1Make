@@ -278,7 +278,8 @@ void process(char* tmpbuf, bbboard* myboard) {
         operatorbuf[strlen(operatorbuf)] = '\0';
         result = load_file(operatorbuf, myboard);
         if (!result) {  // Failed to load the board
-            char tmpoutbuf[256];
+            char tmpoutbuf[MAX_INPUT];
+            memset(tmpoutbuf, '\0', MAX_INPUT);
             sprintf_s(tmpoutbuf, sizeof(tmpoutbuf),
                 "Unable to load the file: %s\nPlease make sure that the file is in the directory or that the whole path is present.",
                 operatorbuf);
