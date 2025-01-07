@@ -28,21 +28,28 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
         char row_buf[1270] = { 0 };
         char col_buf[50] = { 0 };
         int valid_count = 0, col_valid_count = 0;
+        // Keep track of the total size of the string in buf
+        size_t buf_len = 0;
 
         // Parse row (letters)
         while (*test_char >= 'a' && *test_char <= 'z') {
             row_buf[valid_count++] = *test_char;
-            row_index = row_index * 26 + (toupper(*test_char) - 'A');
+            row_index = row_index * 26 + (toupper(*test_char) - 'A' + 1);
             ++test_char;
         }
 
         // Ensure at least one letter for row
         if (valid_count == 0) {
-            sprintf_s(tmpbuf, sizeof(tmpbuf), "Invalid format: expected letters for row, found '%s',", row_buf);
-            strcat_s(buf, LARGE_BUF_SIZE, tmpbuf);
+            snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected letters for row, found '%s',", row_buf);
+            if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
+                strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
+                buf_len += strlen(tmpbuf);
+            }
             while (*test_char != '\0' && *test_char != ' ' && *test_char != ',') ++test_char;
             continue;
         }
+
+        row_index -= 1;             // Convert back to 0 based index.
 
         // Parse column (digits)
         while (*test_char >= '0' && *test_char <= '9') {
@@ -58,24 +65,35 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
 
         // Ensure at least one digit for column
         if (col_valid_count == 0) {
-            sprintf_s(tmpbuf, sizeof(tmpbuf), "Invalid format: expected digits for column, found '%s',", col_buf);
-            strcat_s(buf, LARGE_BUF_SIZE, tmpbuf);
+            snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected digits for column, found '%s',", col_buf);
+            if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
+                strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
+                buf_len += strlen(tmpbuf);
+            }
             while (*test_char != '\0' && *test_char != ' ' && *test_char != ',') ++test_char;
             continue;
         }
 
         // Bounds checking
         if (row_index >= myboard->rows || col_index < 0 || col_index >= myboard->columns) {
-            sprintf_s(tmpbuf, sizeof(tmpbuf), "OOB: row %s (%d) col %s (%d),", row_buf, row_index, col_buf, col_index);
-            strcat_s(buf, LARGE_BUF_SIZE, tmpbuf);
-            while (*test_char != '\0' && *test_char != ' ' && *test_char != ',') ++test_char;
+            snprintf(tmpbuf, sizeof(tmpbuf), "OOB: row %s (%d) col %s (%d),", row_buf, row_index, col_buf, col_index);
+            if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
+                strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
+                buf_len += strlen(tmpbuf);
+            }
+
+            while (*test_char != '\0' && *test_char != ' ' && *test_char == ',') ++test_char;
             continue;
         }
 
         // Array arithmetic and output
         int location = row_index * myboard->columns + col_index;
-        sprintf_s(tmpbuf, sizeof(tmpbuf), "%i,", myboard->mine[location]);
-        strcat_s(buf, LARGE_BUF_SIZE, tmpbuf);
+        snprintf(tmpbuf, sizeof(tmpbuf), "%i,", myboard->mine[location]);
+        if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
+            strcat_s(buf, LARGE_BUF_SIZE, tmpbuf);
+            buf_len += strlen(tmpbuf);
+        }
+
 
         // Skip trailing spaces and commas
         while (*test_char == ' ' || *test_char == ',') ++test_char;
@@ -92,17 +110,45 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
 
 
 
-int main()
+int main(int argc, char *argv[])
 {
-    char* buf;
     char mybuf[MAX_INPUT];
-    buf = mybuf;
-    output_string("Welcome to Battleship Fun\nPlease enter --help for help\n--load <filename>\n--quit to quit\nor enter a value to check the file\n:");
+    int args_in = 0;
+    char* current = mybuf;                              // Pointer for snprintf
+    size_t remaining = MAX_INPUT;               // size_t defining the remaining room in the string
+    if (argc < 2) {
+        output_string("Loaded with too few or no arguments.  Proceeding.");
+    }
+    else {
+        args_in = 1;
+        memset(mybuf, '\0', MAX_INPUT);         // Initialize the string
+        
+        for (int i = 1; i < argc; ++i) {        // Concatenate argv into a string for evaluate_input
+            int written = snprintf(current, remaining, "%s%s", argv[i], (i < argc - 1) ? " " : "");
+            if (written < 0 || (size_t)written >= remaining) {
+                output_string("The arguments are too long to fit in the string.");
+                return 1;
+            }
+            current += written;
+            remaining -= written;
+        }
+
+    }
+    if (!args_in) {
+        output_string("Welcome to Battleship Fun\nPlease enter --help for help\n--load <filename>\n--quit to quit\nor enter a value to check the file\n:");
+    }
     bbboard myboard;                            // Declare the new board which will hold the arrays and types
     memset(&myboard, 0, sizeof(myboard));       // Clear out the myboard and fill it with only 0's.
+    
     while (true) {
-        fgets(buf, MAX_INPUT, stdin);
-        evaluate_input(buf, &myboard);
+        if (!args_in) {                         // No arguments in the command line
+            fgets(mybuf, MAX_INPUT, stdin);
+            evaluate_input(mybuf, &myboard);
+        }
+        else {
+            evaluate_input(mybuf, &myboard);
+            args_in = 0;                        // Future loops will no longer be checking for file input
+        }
     }
 
 }

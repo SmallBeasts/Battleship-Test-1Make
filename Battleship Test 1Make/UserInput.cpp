@@ -6,8 +6,6 @@
 void evaluate_input(char* tmpbuf, bbboard* myboard) {
     char* context = NULL;                // Context for strtok_s
     char* token = NULL;                  // Token pointer
-    char newbuf[MAX_INPUT];              // Buffer for command data
-    memset(newbuf, '\0', MAX_INPUT);     // Initialize newbuf with null terminators
 
     // Tokenize by "--"
     token = strtok_s(tmpbuf, "--", &context);
