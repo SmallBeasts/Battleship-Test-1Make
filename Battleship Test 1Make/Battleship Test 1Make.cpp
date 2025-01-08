@@ -34,7 +34,7 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
         // Parse row (letters)
         while (*test_char >= 'a' && *test_char <= 'z') {
             row_buf[valid_count++] = *test_char;
-            row_index = row_index * 26 + (toupper(*test_char) - 'A' + 1);
+            row_index = row_index * 26 + (toupper(*test_char) - 'A'); // Row A is 0 in 0-based logic
             ++test_char;
         }
 
@@ -49,7 +49,6 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
             continue;
         }
 
-        row_index -= 1;             // Convert back to 0 based index.
 
         // Parse column (digits)
         while (*test_char >= '0' && *test_char <= '9') {
