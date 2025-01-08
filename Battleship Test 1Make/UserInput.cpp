@@ -130,6 +130,7 @@ void process(char* tmpbuf, bbboard* myboard) {
         }
         else {
             query_array(myboard, operatorbuf, BOARD_MINE);
+            myboard->guess_placed = true;
         }
         return;
     case -1:  // Handle potential direct array address

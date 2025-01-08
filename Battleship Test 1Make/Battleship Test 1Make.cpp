@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
     }
     bbboard myboard;                            // Declare the new board which will hold the arrays and types
     memset(&myboard, 0, sizeof(myboard));       // Clear out the myboard and fill it with only 0's.
+    myboard.guess_placed = false;
     
     while (true) {
         if (!args_in) {                         // No arguments in the command line
@@ -147,6 +148,9 @@ int main(int argc, char *argv[])
         else {
             evaluate_input(mybuf, &myboard);
             args_in = 0;                        // Future loops will no longer be checking for file input
+            if (myboard.guess_placed) {
+                break;
+            }
         }
     }
 
