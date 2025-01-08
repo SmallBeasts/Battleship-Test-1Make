@@ -25,22 +25,22 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
 
         int row_index = 0;
         int col_index = 0;
-        char row_buf[1270] = { 0 };
-        char col_buf[50] = { 0 };
+        char row_buf[50] = { 0 };
+        char col_buf[1270] = { 0 };
         int valid_count = 0, col_valid_count = 0;
         // Keep track of the total size of the string in buf
         size_t buf_len = 0;
 
-        // Parse row (letters)
+        // Parse col (letters)
         while (*test_char >= 'a' && *test_char <= 'z') {
-            row_buf[valid_count++] = *test_char;
-            row_index = row_index * 26 + (toupper(*test_char) - 'A'); // Row A is 0 in 0-based logic
+            col_buf[col_valid_count++] = *test_char;
+            col_index = col_index * 26 + (toupper(*test_char) - 'A'); // Col A is 0 in 0-based logic
             ++test_char;
         }
 
-        // Ensure at least one letter for row
-        if (valid_count == 0) {
-            snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected letters for row, found '%s',", row_buf);
+        // Ensure at least one letter for col
+        if (col_valid_count == 0) {
+            snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected letters for col, found '%s',", row_buf);
             if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
                 strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
                 buf_len += strlen(tmpbuf);
@@ -50,20 +50,20 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
         }
 
 
-        // Parse column (digits)
+        // Parse row (digits)
         while (*test_char >= '0' && *test_char <= '9') {
-            col_buf[col_valid_count++] = *test_char;
-            col_index = col_index * 10 + (*test_char - '0');  // Accumulate column value
+            row_buf[valid_count++] = *test_char;
+            row_index = row_index * 10 + (*test_char - '0');  // Accumulate column value
             ++test_char;
         }
 
         // Apply zero-based indexing after parsing the full number
-        if (col_valid_count > 0) {
-            col_index -= 1;  // Convert to zero-based index
+        if (valid_count > 0) {
+            row_index -= 1;  // Convert to zero-based index
         }
 
-        // Ensure at least one digit for column
-        if (col_valid_count == 0) {
+        // Ensure at least one digit for row
+        if (valid_count == 0) {
             snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected digits for column, found '%s',", col_buf);
             if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
                 strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
