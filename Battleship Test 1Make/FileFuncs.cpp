@@ -1,6 +1,19 @@
 #include "FileFuncs.h"
 #include "Helper.h"
 
+
+void close_data(File * myfile, char* buf, char* fbuf, bbboard* myboard) {
+    if (myfile != NULL) {
+        fclose(myfile);
+    }
+    if (buf != NULL) {
+        free(buf);
+    }
+    if (fbuf != NULL) {
+        free(fbuf);
+    }
+    myboard->Interactive_go = false;
+}
 /* Load_File will open a file, check it and load it into the bbboard struct
     It will return the following:
     0 = Failed to open the file
@@ -9,6 +22,10 @@
     -2 = Memory is allocated badly
 */
 int load_file(char* filename, bbboard* myboard) {
+    FILE * myfile = NULL;
+    char * posbuf = NULL;
+    char * filebuf = NULL;
+
     if (fopen_s(&myboard->savefile, filename, "r") != 0) { // Failed to open the file
         myboard->savefile = NULL;
         return 0;

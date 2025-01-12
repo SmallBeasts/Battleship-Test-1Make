@@ -12,5 +12,6 @@
 #include "UserInput.h"
 
 int load_file(char* filename, bbboard* myboard);
+void close_data(File * myfile, char* buf, char* fbuf, bbboard* myboard);
 
 #endif // !FILEFUNCS_H
