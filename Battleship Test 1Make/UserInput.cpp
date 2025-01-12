@@ -101,6 +101,7 @@ void process(char* tmpbuf, bbboard* myboard) {
             fclose(myboard->savefile);  // Close the file
             free(myboard->mine);  // Free the dynamically allocated memory
             memset(myboard, 0, sizeof(bbboard));  // Do a complete reset
+            myboard->interaactive_go = false;
         }
         operatorbuf[strlen(operatorbuf)] = '\0';
         result = load_file(operatorbuf, myboard);
@@ -115,27 +116,32 @@ void process(char* tmpbuf, bbboard* myboard) {
         }
         if (result == -1) {
             output_string("Unable to load the file, the file appears corrupt or incorrectly formatted.");
+            myboard->interaactive_go = false;
             return;
         }
         if (result == -2) {
             output_string("There was a memory error!");
+            myboard->interaactive_go = false;
             return;
         }
         output_string("The file was loaded successfully.");
+        myboard->interaactive_go = true;
         return;
     case STATE_GUESS:
         if (!myboard->loaded) {
             output_string("Please be sure to load a file first.");
+            myboard->interaactive_go = false;
             return;
         }
         else {
             query_array(myboard, operatorbuf, BOARD_MINE);
-            myboard->guess_placed = true;
+            myboard->interaactive_go = true;
         }
         return;
     case -1:  // Handle potential direct array address
         if (!myboard->loaded) {
             output_string("Please be sure to load a file first.");
+            myboard->interaactive_go = false;
             return;
         }
 
@@ -145,6 +151,7 @@ void process(char* tmpbuf, bbboard* myboard) {
         }
         else {
             output_string("Invalid input. Type --help for command usage.");
+            myboard->interaactive_go = false;
         }
         return;
     default:
