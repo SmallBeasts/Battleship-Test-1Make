@@ -172,7 +172,6 @@ int main(int argc, char *argv[])
         }
         else {
             command_line_process(argv, &myboard);
-            evaluate_input(mybuf, &myboard);
             args_in = 0;                        // Future loops will no longer be checking for file input
         }
         if (!myboard.interaactive_go || !myboard.loaded) {
