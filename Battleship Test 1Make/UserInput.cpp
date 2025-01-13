@@ -2,24 +2,31 @@
 #include "Helper.h"
 #include "FileFuncs.h"
 #include "UserInput.h"
+#include "Battleshipt Test 1Make.h"
 
 
 argv_enum command_line_process(int argc, char* argv[], bbboard* myboard) {
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--guess") == 0) {
-            if (i + 1 < argc) { // Check for additional arguments after "--guess"
-                printf("Processing guess: %s\n", argv[i + 1]);
-                // Add guessing logic here (e.g., parse and validate guesses)
-                return ARGV_COMMAND_GUESS;
-            } else {
-                printf("Error: '--guess' requires additional arguments.\n");
-                return ARGV_COMMAND_EVAL;
+            ++i; // Move to the next argument after "--guess"
+            char out_buf[LARGE_BUF_ARRAY];                      // Store all the query results for output
+
+            while (i < argc && argv[i][0] != '-') { // Process all guesses until another -
+                new_query_array(argv[i], out_buf, myboard);         
+                ++i;
             }
+
+            --i; // Adjust index to account for the outer loop increment
+            char final_buf[LARGE_BUF_ARRAY] = snprintf_s(final_buf, LARGE_BUF_ARRAY, "%s", strlen(out_buf) - 1);
+            printf("%s",final_buf);
+            return ARGV_COMMAND_GUESS;
         }
         if (strcmp(argv[i], "--load") == 0) {
             if (i + 1 < argc) {
                 printf("Loading file: %s\n", argv[i + 1]);
-                load_file(argv[i+1], );
+                if (load_file(argv[i+1], &myboard) == LF_FILE_LOADED) {
+                    prinft("File %s was successfully loaded\n", argv[i + 1]);
+                }
                 return ARGV_COMMAND_LOAD;
             } else {
                 printf("Error: '--load' requires a filename.\n");
@@ -34,7 +41,7 @@ argv_enum command_line_process(int argc, char* argv[], bbboard* myboard) {
             return ARGV_COMMAND_HELP;
         }
         if (strcmp(argv[i], "--exit") == 0 || strcmp(argv[i], "--quit") == 0) {
-            printf("Exiting program.\n");
+            printf("Exiting.\n");
             return ARGV_COMMAND_EXIT;
         }
 

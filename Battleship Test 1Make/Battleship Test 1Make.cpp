@@ -10,6 +10,49 @@
 #include "UserInput.h"
 #include "FileFuncs.h"
 
+/* New query_array which will process single guesses and store it to out_buf for printing*/
+bool new_query_array(const char* guess, char * out_buf, bbboard * myboard) {
+    int row_index = 0;
+    int col_index = 0;
+    int valid_col_count = 0, valid_row_count = 0;
+
+    // Parse the column (letters)
+    // Create a temp pointer to the guess
+    char * tmpchar = guess;
+    while((*tmpchar >= 'a' && *tmpchar <= 'z') || (*tmpchar >= 'A' && *tmpchar <= 'Z')) {                // handle upper and lower case guesses
+        col_index = col_index * 26 + (toupper(*tmpchar) - 'A');                                 // 0 based index for column
+        ++tmpchar;                                                                              // Next letter
+        valid_col_count++;                                                                      // Count how many letters
+    }
+    // Make sure at least one column processed
+    if (valid_col_count == 0) {                                                 // Invalid query
+        strcat_s(out_buf, LARGE_BUF_SIZE, "Bad Column,");
+        return false;
+    }
+    
+    // Parse the row now
+    while (*tmpchar >= '0' && *tmpchar <= '9'){                                             // 0 based row index with integer found
+        row_index = row_index * 10 + (*tmpchar - '0');
+        valid_row_count++;
+    }
+
+    // Make sure one row processed
+    if (valid_row_count == 0) {
+        strcat_s(out_buf, LARGE_BUF_SIZE, "Bad Row,");
+        return false;
+    }
+
+    // Make sure in bounds query
+    if (row_index >= myboard->rows || col_index >= myboard->cols) {                           // OOB
+        strcat_s(out_buf, LARGE_BUF_SIZE, "OOB,");
+    } else {
+        char intbuf[8];
+        snprintf_s(intbuf, sizeof(intbuf), "%d,", myboard->mine[row_index * myboard->cols + col_index]);
+        strcat_s(out_buf, LARGE_BUF_SIZE, intbuf);
+        return true;
+    }
+    return false;
+}
 
 
 /* query_array, will query and create a string with the output of each input*/
