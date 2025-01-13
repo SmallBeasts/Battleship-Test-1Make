@@ -56,11 +56,6 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
             ++test_char;
         }
 
-        // Apply zero-based indexing after parsing the full number
-        if (valid_count > 0) {
-            row_index -= 1;  // Convert to zero-based index
-        }
-
         // Ensure at least one digit for row
         if (valid_count == 0) {
             snprintf(tmpbuf, sizeof(tmpbuf), "OOB,");
@@ -118,19 +113,7 @@ int main(int argc, char *argv[])
         output_string("Loaded with too few or no arguments.  Proceeding.");
     }
     else {
-        args_in = 1;
-        memset(mybuf, '\0', MAX_INPUT);         // Initialize the string
-        
-        for (int i = 1; i < argc; ++i) {        // Concatenate argv into a string for evaluate_input
-            int written = snprintf(current, remaining, "%s%s", argv[i], (i < argc - 1) ? " " : "");
-            if (written < 0 || (size_t)written >= remaining) {
-                output_string("The arguments are too long to fit in the string.");
-                return 1;
-            }
-            current += written;
-            remaining -= written;
-        }
-
+        args_in = 1;   
     }
     if (!args_in) {
         output_string("Welcome to Battleship Fun\nPlease enter --help for help\n--load <filename>\n--quit to quit\nor enter a value to check the file\n:");
@@ -145,10 +128,11 @@ int main(int argc, char *argv[])
             evaluate_input(mybuf, &myboard);
         }
         else {
+            command_line_process(argv, &myboard);
             evaluate_input(mybuf, &myboard);
             args_in = 0;                        // Future loops will no longer be checking for file input
         }
-        if (!myboard.interaactive_go) {
+        if (!myboard.interaactive_go || !myboard.loaded) {
             break;
         }
     }

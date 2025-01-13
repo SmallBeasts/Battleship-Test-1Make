@@ -3,6 +3,14 @@
 #include "FileFuncs.h"
 #include "UserInput.h"
 
+
+void command_line_process(char* command, int args, bbboard* myboard) {
+    // command is really argv, args is argc
+    for (int i = 1; i < args; ++i) {
+        if (strcmp(&command[i], "--guess") == 0)
+    }
+
+}
 void evaluate_input(char* tmpbuf, bbboard* myboard) {
     char* context = NULL;                // Context for strtok_s
     char* token = NULL;                  // Token pointer
@@ -125,7 +133,7 @@ void process(char* tmpbuf, bbboard* myboard) {
             return;
         }
         output_string("The file was loaded successfully.");
-        myboard->interaactive_go = true;
+        myboard->interaactive_go = true;                                                // File was loaded
         return;
     case STATE_GUESS:
         if (!myboard->loaded) {
@@ -135,7 +143,7 @@ void process(char* tmpbuf, bbboard* myboard) {
         }
         else {
             query_array(myboard, operatorbuf, BOARD_MINE);
-            myboard->interaactive_go = true;
+            myboard->interaactive_go = false;                                        // A query was performed no need to go interactive
         }
         return;
     case -1:  // Handle potential direct array address

@@ -14,7 +14,7 @@ const int BOARD_OPP = 2;
 struct bbboard {
     FILE* savefile;     // Saved file if one is present.
     int loaded;         // Check that something has indeed been loaded.
-    int interaactive_go;   // Check for argv if a guess was activated.
+    int interaactive_go;   // Check for argv if a guess was activated, only true if no guess, and a file was loaded.
     int rows;
     int columns;
     int* mine;        // Dynamically allocate for a board for the player
