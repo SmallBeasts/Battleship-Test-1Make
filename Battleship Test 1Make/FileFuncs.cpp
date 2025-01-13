@@ -9,7 +9,7 @@
     -1 = File is corrupt
     -2 = Memory is allocated badly
 */
-int load_file(char* filename, bbboard* myboard) {
+LoadFile_enum load_file(char* filename, bbboard* myboard) {
     FILE * myfile = NULL;
     char * posbuf = NULL;
     char * filebuf = NULL;

@@ -11,6 +11,13 @@
 #include "Helper.h"
 #include "UserInput.h"
 
-int load_file(char* filename, bbboard* myboard);
+typedef enum {
+    LF_FILE_LOADED,
+    LF_FILE_NOT_FOUND,
+    LF_FILE_CORRUPT,
+    LF_MEMORY_FAIL
+}LoadFile_enum;
+
+LoadFile_enum load_file(char* filename, bbboard* myboard);
 
 #endif // !FILEFUNCS_H

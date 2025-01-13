@@ -4,29 +4,49 @@
 #include "UserInput.h"
 
 
-enum command_line_process(char* command, int args, bbboard* myboard) {
-    // command is really argv, args is argc
-    for (int i = 1; i < args; ++i) {
-        if (strcmp(&command[i], "--guess") == 0) {
-            // Code for guess to go here
-        }
-        if (strcmp(&command[i], "--load") == 0) {
-            if (i + 1 > args) {
-                printf("Error: Failed to load file, no filename given after load statement.\n");
-                return ARGV;                                           // This should automatically return since nothing else can continue afterwards
+argv_enum command_line_process(int argc, char* argv[], bbboard* myboard) {
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--guess") == 0) {
+            if (i + 1 < argc) { // Check for additional arguments after "--guess"
+                printf("Processing guess: %s\n", argv[i + 1]);
+                // Add guessing logic here (e.g., parse and validate guesses)
+                return ARGV_COMMAND_GUESS;
+            } else {
+                printf("Error: '--guess' requires additional arguments.\n");
+                return ARGV_COMMAND_EVAL;
             }
         }
-        if (strcmp(&command[i], "--help") == 0) {
-            printf("--help will get you this information\n--load <filename> will load a filename or give an error if the file is not found\n"
-            "--quit will quit the program\nEntering a grid location with a letter followed by a number (A1) will give you the value at that grid location\n"
-            "--guess followed by a set of grid locations separated by spaces will give you the results at each location.\n"
-            "--exit or --quit will gracefully exit the program.");
-            return false;
+        if (strcmp(argv[i], "--load") == 0) {
+            if (i + 1 < argc) {
+                printf("Loading file: %s\n", argv[i + 1]);
+                load_file(argv[i+1], );
+                return ARGV_COMMAND_LOAD;
+            } else {
+                printf("Error: '--load' requires a filename.\n");
+                return ARGV_COMMAND_LOAD;
+            }
         }
-        return false;                                                   // This is likely a guess
+        if (strcmp(argv[i], "--help") == 0) {
+            printf("--help: Displays this information.\n"
+                   "--load <filename>: Loads a file.\n"
+                   "--guess <locations>: Makes a guess for grid locations.\n"
+                   "--exit or --quit: Exits the program.\n");
+            return ARGV_COMMAND_HELP;
+        }
+        if (strcmp(argv[i], "--exit") == 0 || strcmp(argv[i], "--quit") == 0) {
+            printf("Exiting program.\n");
+            return ARGV_COMMAND_EXIT;
+        }
+
+        // Assume any other input is a guess (e.g., grid locations)
+        printf("Evaluating input: %s\n", argv[i]);
+        // Add logic for handling grid location input
+        return ARGV_COMMAND_EVAL;
     }
-    return true;
+
+    return -1; // No valid command found
 }
+
 
 
 void evaluate_input(char* tmpbuf, bbboard* myboard) {
