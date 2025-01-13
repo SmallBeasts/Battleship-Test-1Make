@@ -40,7 +40,7 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
 
         // Ensure at least one letter for col
         if (col_valid_count == 0) {
-            snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected letters for col, found '%s',", row_buf);
+            snprintf(tmpbuf, sizeof(tmpbuf), "OOB,");
             if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
                 strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
                 buf_len += strlen(tmpbuf);
@@ -48,7 +48,6 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
             while (*test_char != '\0' && *test_char != ' ' && *test_char != ',') ++test_char;
             continue;
         }
-
 
         // Parse row (digits)
         while (*test_char >= '0' && *test_char <= '9') {
@@ -64,7 +63,7 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
 
         // Ensure at least one digit for row
         if (valid_count == 0) {
-            snprintf(tmpbuf, sizeof(tmpbuf), "Invalid format: expected digits for column, found '%s',", col_buf);
+            snprintf(tmpbuf, sizeof(tmpbuf), "OOB,");
             if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
                 strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
                 buf_len += strlen(tmpbuf);
@@ -74,8 +73,8 @@ void query_array(bbboard* myboard, char* opbuf, int array_choice = 1) {
         }
 
         // Bounds checking
-        if (row_index >= myboard->rows || col_index < 0 || col_index >= myboard->columns) {
-            snprintf(tmpbuf, sizeof(tmpbuf), "OOB: row %s (%d) col %s (%d),", row_buf, row_index, col_buf, col_index);
+        if (row_index >= myboard->rows || col_index < 0 || col_index >= myboard->columns || row_index < 0) {
+            snprintf(tmpbuf, sizeof(tmpbuf), "OOB,");
             if (buf_len + strlen(tmpbuf) < LARGE_BUF_SIZE) {
                 strcat_s(buf, LARGE_BUF_SIZE - buf_len, tmpbuf);
                 buf_len += strlen(tmpbuf);
