@@ -4,13 +4,31 @@
 #include "UserInput.h"
 
 
-void command_line_process(char* command, int args, bbboard* myboard) {
+enum command_line_process(char* command, int args, bbboard* myboard) {
     // command is really argv, args is argc
     for (int i = 1; i < args; ++i) {
-        if (strcmp(&command[i], "--guess") == 0)
+        if (strcmp(&command[i], "--guess") == 0) {
+            // Code for guess to go here
+        }
+        if (strcmp(&command[i], "--load") == 0) {
+            if (i + 1 > args) {
+                printf("Error: Failed to load file, no filename given after load statement.\n");
+                return ARGV;                                           // This should automatically return since nothing else can continue afterwards
+            }
+        }
+        if (strcmp(&command[i], "--help") == 0) {
+            printf("--help will get you this information\n--load <filename> will load a filename or give an error if the file is not found\n"
+            "--quit will quit the program\nEntering a grid location with a letter followed by a number (A1) will give you the value at that grid location\n"
+            "--guess followed by a set of grid locations separated by spaces will give you the results at each location.\n"
+            "--exit or --quit will gracefully exit the program.");
+            return false;
+        }
+        return false;                                                   // This is likely a guess
     }
-
+    return true;
 }
+
+
 void evaluate_input(char* tmpbuf, bbboard* myboard) {
     char* context = NULL;                // Context for strtok_s
     char* token = NULL;                  // Token pointer
