@@ -10,15 +10,17 @@ argv_enum command_line_process(int argc, char* argv[], bbboard* myboard) {
         if (strcmp(argv[i], "--guess") == 0) {
             ++i; // Move to the next argument after "--guess"
             char out_buf[LARGE_BUF_ARRAY];                      // Store all the query results for output
-
             while (i < argc && argv[i][0] != '-') { // Process all guesses until another -
                 new_query_array(argv[i], out_buf, myboard);         
                 ++i;
             }
 
             --i; // Adjust index to account for the outer loop increment
-            char final_buf[LARGE_BUF_ARRAY] = snprintf_s(final_buf, LARGE_BUF_ARRAY, "%s", strlen(out_buf) - 1);
-            printf("%s",final_buf);
+            if (strlen(out_buf) > 0 && out_buf[strlen - 1] == ',') {
+                out_buf[strlen(out_buf) - 1] = '\0';                            // Remove trailing comma
+            }
+            
+            printf("%s",out_buf);
             return ARGV_COMMAND_GUESS;
         }
         if (strcmp(argv[i], "--load") == 0) {

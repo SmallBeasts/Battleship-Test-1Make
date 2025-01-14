@@ -20,7 +20,6 @@ bool new_query_array(const char* guess, char * out_buf, bbboard * myboard) {
     // Create a temp pointer to the guess
     char * tmpchar = guess;
     while((*tmpchar >= 'a' && *tmpchar <= 'z') || (*tmpchar >= 'A' && *tmpchar <= 'Z')) {                // handle upper and lower case guesses
-        col_index = col_index * 26 + (toupper(*tmpchar) - 'A');                                 // 0 based index for column
         ++tmpchar;                                                                              // Next letter
         valid_col_count++;                                                                      // Count how many letters
     }
@@ -29,11 +28,18 @@ bool new_query_array(const char* guess, char * out_buf, bbboard * myboard) {
         strcat_s(out_buf, LARGE_BUF_SIZE, "Bad Column,");
         return false;
     }
+
+    tmpchar = guess;                                                            // reset pointer
+    for (int i = 0; i < valid_col_count; ++i) {
+        col_index = col_index * 26 + (toupper(*tmpchar) - 'A');
+        ++tmpchar;
+    }
     
     // Parse the row now
     while (*tmpchar >= '0' && *tmpchar <= '9'){                                             // 0 based row index with integer found
         row_index = row_index * 10 + (*tmpchar - '0');
         valid_row_count++;
+        ++tmpchar;
     }
 
     // Make sure one row processed
